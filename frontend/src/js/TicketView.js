@@ -14,31 +14,41 @@ export default class TicketView {
   }
 
   render() {
-    this.container.innerHTML = '';
+    this.container.innerHTML = "";
 
-    this.tickets.forEach(ticket => {
-      this.container.insertAdjacentHTML('beforeend', ticket.getHTML());
+    this.tickets.forEach((ticket) => {
+      this.container.insertAdjacentHTML("beforeend", ticket.getHTML());
     });
 
-    Array.from(this.container.querySelectorAll('.ticket-notice')).forEach(ticketNotice => {
-      ticketNotice.addEventListener('click', this.toggleStatus.bind(this));
-    });
+    Array.from(this.container.querySelectorAll(".ticket-notice")).forEach(
+      (ticketNotice) => {
+        ticketNotice.addEventListener("click", this.toggleStatus.bind(this));
+      },
+    );
 
-    Array.from(this.container.querySelectorAll('.ticket-edit')).forEach(ticket => {
-      ticket.addEventListener('click', this.editTicket.bind(this));
-    });
+    Array.from(this.container.querySelectorAll(".ticket-edit")).forEach(
+      (ticket) => {
+        ticket.addEventListener("click", this.editTicket.bind(this));
+      },
+    );
 
-    Array.from(this.container.querySelectorAll('.ticket-delete')).forEach(ticket => {
-      ticket.addEventListener('click', this.deleteTicket.bind(this));
-    });
+    Array.from(this.container.querySelectorAll(".ticket-delete")).forEach(
+      (ticket) => {
+        ticket.addEventListener("click", this.deleteTicket.bind(this));
+      },
+    );
 
-    Array.from(this.container.querySelectorAll('.item-title')).forEach(ticket => {
-      ticket.addEventListener('click', this.toggleTicketTitle.bind(this));
-    });
+    Array.from(this.container.querySelectorAll(".item-title")).forEach(
+      (ticket) => {
+        ticket.addEventListener("click", this.toggleTicketTitle.bind(this));
+      },
+    );
   }
 
   renderModalDelete(id) {
-    this.container.insertAdjacentHTML('beforeend', `
+    this.container.insertAdjacentHTML(
+      "beforeend",
+      `
       <div class="modal">
         <div class="modal-content">
           <div class="modal-header">Удалить тикет</div>
@@ -49,29 +59,32 @@ export default class TicketView {
           </div>
         </div>
       </div>
-    `);
+    `,
+    );
 
-    this.container.querySelector('.btn-cancel').addEventListener('click', e => {
+    this.container
+      .querySelector(".btn-cancel")
+      .addEventListener("click", (e) => {
+        e.preventDefault();
+        this.closeModal();
+      });
+
+    this.container.querySelector(".btn-ok").addEventListener("click", (e) => {
       e.preventDefault();
-      this.closeModal();
-    })
-
-    this.container.querySelector('.btn-ok').addEventListener('click', e => {
-
       this.ticketService.delete(id, () => {
         this.closeModal();
         this.renderTickets();
       });
-    })
+    });
   }
 
   toggleStatus(e) {
     e.preventDefault();
-    const id = e.target.closest('.ticket-item').dataset.id;
-    const data = this.tickets.find(ticket => ticket.id === id);
+    const id = e.target.closest(".ticket-item").dataset.id;
+    const data = this.tickets.find((ticket) => ticket.id === id);
 
     data.status = !data.status;
-    
+
     this.ticketService.update(id, data, () => {
       this.renderTickets();
     });
@@ -79,17 +92,20 @@ export default class TicketView {
 
   toggleTicketTitle(e) {
     e.preventDefault();
-    const parent = e.target.closest('.ticket-item');
-    const title = parent.querySelector('.item-title');
-    const description = title.querySelector('.item-description');
-    
+    const parent = e.target.closest(".ticket-item");
+    const title = parent.querySelector(".item-title");
+    const description = title.querySelector(".item-description");
+
     if (description) {
       description.remove();
     } else {
       const id = parent.dataset.id;
-      const data = this.tickets.find(ticket => ticket.id === id);
+      const data = this.tickets.find((ticket) => ticket.id === id);
 
-      title.insertAdjacentHTML('beforeend', `<p class="item-description">${data.description}</p>`);
+      title.insertAdjacentHTML(
+        "beforeend",
+        `<p class="item-description">${data.description}</p>`,
+      );
     }
   }
 
@@ -100,33 +116,35 @@ export default class TicketView {
 
   editTicket(e) {
     e.preventDefault();
-    const id = e.target.closest('.ticket-item').dataset.id;
-    const data = this.tickets.find(ticket => ticket.id === id);
+    const id = e.target.closest(".ticket-item").dataset.id;
+    const data = this.tickets.find((ticket) => ticket.id === id);
 
     this.renderModal(data);
   }
 
   deleteTicket(e) {
     e.preventDefault();
-    const id = e.target.closest('.ticket-item').dataset.id;
+    const id = e.target.closest(".ticket-item").dataset.id;
 
     this.renderModalDelete(id);
   }
 
   renderModal(data = {}) {
-    this.container.insertAdjacentHTML('beforeend', `
+    this.container.insertAdjacentHTML(
+      "beforeend",
+      `
       <div class="modal">
         <div class="modal-content">
-          <div class="modal-header">${data.id ? 'Изменить тикет' : 'Добавить тикет'}</div>
+          <div class="modal-header">${data.id ? "Изменить тикет" : "Добавить тикет"}</div>
           <form class="ticket-submit-form">
-            <input type="hidden" name="id" value="${data.id ? data.id : ''}"></input>
+            <input type="hidden" name="id" value="${data.id ? data.id : ""}"></input>
             <div class="text-field">
               <label for="ticket-name">Краткое описание</label>
-              <input type="text" name="name" id="ticket-name" value="${data.name ? data.name : ''}"></input>
+              <input type="text" name="name" id="ticket-name" value="${data.name ? data.name : ""}"></input>
             </div>
             <div class="text-field">
               <label for="ticket-description">Полное описание</label>
-              <textarea name="description" id="ticket-description">${data.description ? data.description : ''}</textarea>
+              <textarea name="description" id="ticket-description">${data.description ? data.description : ""}</textarea>
             </div>
             <div class="modal-buttons">
               <button class="btn btn-cancel" name="intent" value="cancel">Отмена</button>
@@ -135,23 +153,30 @@ export default class TicketView {
           </form>
         </div>
       </div>
-    `);
+    `,
+    );
 
-    this.container.querySelector('.btn-cancel').addEventListener('click', e => {
-      e.preventDefault();
-      this.closeModal();
-    })
+    this.container
+      .querySelector(".btn-cancel")
+      .addEventListener("click", (e) => {
+        e.preventDefault();
+        this.closeModal();
+      });
 
-    this.container.querySelector('.ticket-submit-form').addEventListener('submit', this.modalFormSubmit.bind(this));
+    this.container
+      .querySelector(".ticket-submit-form")
+      .addEventListener("submit", this.modalFormSubmit.bind(this));
   }
 
   modalFormSubmit(e) {
     e.preventDefault();
-    const formData = new Ticket(Object.fromEntries((new FormData(e.target, e.submitter)).entries()));
+    const formData = new Ticket(
+      Object.fromEntries(new FormData(e.target, e.submitter).entries()),
+    );
 
     if (formData.id) {
-      const data = this.tickets.find(ticket => ticket.id === formData.id);
-      this.ticketService.update(formData.id, {...data, ...formData}, () => {
+      const data = this.tickets.find((ticket) => ticket.id === formData.id);
+      this.ticketService.update(formData.id, { ...data, ...formData }, () => {
         this.closeModal();
         this.renderTickets();
       });
@@ -164,6 +189,6 @@ export default class TicketView {
   }
 
   closeModal() {
-    this.container.querySelector('.modal').remove();
+    this.container.querySelector(".modal").remove();
   }
 }
